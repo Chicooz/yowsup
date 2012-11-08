@@ -2,6 +2,7 @@
 
 '''
 Copyright (c) <2012> Tarek Galal <tare2.galal@gmail.com>
+Updated By Sherif Negm 11 2012
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this 
 software and associated documentation files (the "Software"), to deal in the Software 
@@ -26,6 +27,7 @@ from Yowsup.Tools.utilities import Utilities
 from Yowsup.Tools.debugger import Debugger
 from Examples.CmdClient import WhatsappCmdClient
 from Examples.EchoClient import WhatsappEchoClient
+from Examples.ImageClient import WhatsappImageClient
 from Examples.ListenerClient import WhatsappListenerClient
 from Yowsup.Registration.coderequest import WACodeRequest
 from Yowsup.Registration.regrequest import WARegRequest
@@ -71,6 +73,7 @@ modes = clientsGroup.add_mutually_exclusive_group()
 modes.add_argument('-l','--listen', help='Listen to messages', action="store_true", required=False, default=False)
 modes.add_argument('-s','--send', help="Send message to phone number and close connection. Phone is full number including country code, without '+' or '00'", action="store",  nargs=2, metavar=('<phone>','<message>'), required=False)
 modes.add_argument('-i','--interactive', help="Start an interactive conversation with a contact. Phone is full number including country code, without '+' or '00'", action="store", metavar='<phone>', required=False)
+modes.add_argument('-x','--sendimage', help="Send image to phone number and close connection. Phone is full number including country code, without '+' or '00'", action="store",  nargs=4, metavar=('<phone>','<url>','<size>','<name>'), required=False)
 
 
 clientsGroup.add_argument('-w','--wait', help='If used with -s, then connection will not close until server confirms reception of the message', action="store_true", required=False, default=False)
@@ -109,11 +112,21 @@ else:
 			val = args["interactive"]
 			wa = WhatsappCmdClient(val, args['keepalive'] ,args['autoack'])
 			wa.login(sender, password)
+
 		elif args['send']:
 			phone = args["send"][0]
 			message = args["send"][1]
 			wa = WhatsappEchoClient(phone, message, args['wait'])
 			wa.login(sender, password)
+
+		elif args['sendimage']:
+			phone = args["sendimage"][0]
+			url = args["sendimage"][1]
+			size = args["sendimage"][2]
+			name = args["sendimage"][3]
+			wa = WhatsappImageClient(phone, url, size, name, args['wait'])
+			wa.login(sender, password)
+			
 		elif args['listen']:
 			Debugger.enabled = args['debug']
 			wa = WhatsappListenerClient(args['keepalive'], args['autoack'])
